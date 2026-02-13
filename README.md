@@ -1,19 +1,27 @@
 # SimpleGolfGPS
 
-A simple, no-frills GPS app for golf. Get distances to the green without the clutter.
+A simple Android app for tracking golf shot distances and recording detailed feedback. Not a course GPS — it's a shot distance tracker with analytics.
 
-## Features (Planned)
+## Features
 
-- GPS distances to front, center, and back of green
-- Minimalist, glanceable UI
-- Works offline with downloaded course data
-- Battery-efficient location tracking
+- **Round Management** — Create rounds with course name, weather, temperature, wind conditions
+- **GPS Shot Measurement** — Measure shot distances using GPS (tap to start, walk, tap to finish)
+- **Manual Distance Entry** — Override or manually enter distances
+- **Detailed Shot Feedback** — Record club, wind, lie, strike, ball flight, direction, mental state, and more
+- **Configurable Feedback** — Toggle which feedback categories appear on the shot form
+- **Club Configuration** — Enable/disable clubs and reorder them
+- **Analytics Dashboard** — Per-club stats, miss analysis, strike analysis with filters
+- **Metric/Imperial Units** — Toggle between metres/yards, °C/°F
 
 ## Tech Stack
 
-- **Platform:** Android
+- **Platform:** Android (Min SDK 26 / Android 8.0)
 - **Language:** Kotlin
-- **Min SDK:** 26 (Android 8.0)
+- **UI:** Jetpack Compose with Material 3
+- **Database:** Room (local SQLite)
+- **GPS:** Google Play Location Services
+- **Navigation:** Jetpack Navigation Compose
+- **Settings:** DataStore Preferences
 
 ## Building
 
