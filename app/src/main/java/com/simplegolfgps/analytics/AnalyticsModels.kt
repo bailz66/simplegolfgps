@@ -138,3 +138,9 @@ data class HistogramBucket(
     val count: Int,
     val label: String,
 )
+
+data class DispersionGrid(
+    val cells: List<List<Int>>,  // [row][col] = shot count, 5x5
+    val totalShots: Int,
+    val maxCount: Int,           // for heat map scaling
+)

@@ -37,6 +37,15 @@ class AnalyticsViewModel(application: Application) : AndroidViewModel(applicatio
         AnalyticsComputer.computeShotAnalysis(shots, filtered, filters)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ShotAnalysisState())
 
+    val dispersionState: StateFlow<DispersionGrid?> = combine(
+        allShots,
+        allRounds,
+        _filterState,
+    ) { shots, rounds, filters ->
+        val filtered = AnalyticsComputer.filterShots(shots, rounds, filters)
+        AnalyticsComputer.computeDispersionGrid(filtered)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
     fun selectTab(tab: AnalyticsTab) {
         _selectedTab.value = tab
     }

@@ -447,6 +447,25 @@ object AnalyticsComputer {
             .take(5)
     }
 
+    // --- Dispersion grid ---
+
+    fun computeDispersionGrid(shots: List<Shot>): DispersionGrid? {
+        val relevant = shots.filter { it.directionToTarget != null && it.distanceToTarget != null }
+        if (relevant.isEmpty()) return null
+        val cells = MutableList(5) { MutableList(5) { 0 } }
+        relevant.forEach { shot ->
+            val row = shot.distanceToTarget!!.ordinal  // WayLong=0..WayShort=4
+            val col = shot.directionToTarget!!.ordinal // FarLeft=0..FarRight=4
+            cells[row][col]++
+        }
+        val maxCount = cells.maxOf { it.max() }
+        return DispersionGrid(
+            cells = cells.map { it.toList() },
+            totalShots = relevant.size,
+            maxCount = maxCount,
+        )
+    }
+
     // --- Legacy support for grouping enums by club ---
 
     fun <T> groupEnumByClub(

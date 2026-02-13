@@ -22,6 +22,7 @@ fun AnalyticsScreen(
     onUpdateFilter: (FilterState.() -> FilterState) -> Unit,
     onClearFilters: () -> Unit,
     onBack: () -> Unit,
+    onDispersionClick: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -62,6 +63,7 @@ fun AnalyticsScreen(
                 AnalyticsTab.Dashboard -> DashboardTab(
                     state = dashboardState,
                     useImperial = settings.useImperial,
+                    onDispersionClick = onDispersionClick,
                 )
                 AnalyticsTab.ShotAnalysis -> ShotAnalysisTab(
                     state = shotAnalysisState,

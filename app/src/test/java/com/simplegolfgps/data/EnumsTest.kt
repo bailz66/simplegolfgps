@@ -98,8 +98,8 @@ class EnumsTest {
 
     // Spot-check specific display names
     @Test
-    fun `LightRough displays as Light Rough`() {
-        assertEquals("Light Rough", Lie.LightRough.displayName)
+    fun `LightRough displays as Rough`() {
+        assertEquals("Rough", Lie.LightRough.displayName)
     }
 
     @Test

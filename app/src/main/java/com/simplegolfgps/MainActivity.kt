@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.simplegolfgps.analytics.AnalyticsScreen
 import com.simplegolfgps.analytics.AnalyticsViewModel
+import com.simplegolfgps.analytics.DispersionTargetScreen
 import com.simplegolfgps.settings.SettingsScreen
 import com.simplegolfgps.settings.SettingsViewModel
 import com.simplegolfgps.ui.navigation.Screen
@@ -213,6 +214,21 @@ fun AppNavigation() {
                 settings = settingsState,
                 courseNames = courseNames,
                 onSelectTab = { analyticsViewModel.selectTab(it) },
+                onUpdateFilter = { analyticsViewModel.updateFilter(it) },
+                onClearFilters = { analyticsViewModel.clearFilters() },
+                onBack = { navController.popBackStack() },
+                onDispersionClick = { navController.navigate(Screen.Dispersion.route) },
+            )
+        }
+
+        // Dispersion Target
+        composable(Screen.Dispersion.route) {
+            val dispersionState by analyticsViewModel.dispersionState.collectAsState()
+            val filterState by analyticsViewModel.filterState.collectAsState()
+
+            DispersionTargetScreen(
+                dispersion = dispersionState,
+                filterState = filterState,
                 onUpdateFilter = { analyticsViewModel.updateFilter(it) },
                 onClearFilters = { analyticsViewModel.clearFilters() },
                 onBack = { navController.popBackStack() },
