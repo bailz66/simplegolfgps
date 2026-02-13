@@ -109,12 +109,17 @@ fun EditShotScreen(
                                 val yards = cleaned.toDoubleOrNull()
                                 if (yards != null) {
                                     val metres = UnitConverter.displayToMetres(yards, true)
-                                    onUpdateForm { copy(carryDistance = "%.1f".format(metres)) }
+                                    if (metres <= MAX_DISTANCE_METRES) {
+                                        onUpdateForm { copy(carryDistance = "%.1f".format(metres)) }
+                                    }
                                 } else {
                                     onUpdateForm { copy(carryDistance = cleaned) }
                                 }
                             } else {
-                                onUpdateForm { copy(carryDistance = cleaned) }
+                                val m = cleaned.toDoubleOrNull()
+                                if (m == null || m <= MAX_DISTANCE_METRES) {
+                                    onUpdateForm { copy(carryDistance = cleaned) }
+                                }
                             }
                         },
                         label = { Text("Carry ($distUnit)") },
@@ -133,12 +138,17 @@ fun EditShotScreen(
                             val yards = cleaned.toDoubleOrNull()
                             if (yards != null) {
                                 val metres = UnitConverter.displayToMetres(yards, true)
-                                onUpdateForm { copy(distance = "%.1f".format(metres)) }
+                                if (metres <= MAX_DISTANCE_METRES) {
+                                    onUpdateForm { copy(distance = "%.1f".format(metres)) }
+                                }
                             } else {
                                 onUpdateForm { copy(distance = cleaned) }
                             }
                         } else {
-                            onUpdateForm { copy(distance = cleaned) }
+                            val m = cleaned.toDoubleOrNull()
+                            if (m == null || m <= MAX_DISTANCE_METRES) {
+                                onUpdateForm { copy(distance = cleaned) }
+                            }
                         }
                     },
                     label = { Text(if (showCarry) "Total ($distUnit)" else "Distance ($distUnit)") },
@@ -151,7 +161,9 @@ fun EditShotScreen(
                     elevationMetres = formState.elevationChange,
                     useImperial = settings.useImperial,
                     onAdjust = { delta ->
-                        onUpdateForm { copy(elevationChange = elevationChange + delta) }
+                        onUpdateForm {
+                            copy(elevationChange = (elevationChange + delta).coerceIn(-MAX_ELEVATION_METRES, MAX_ELEVATION_METRES))
+                        }
                     },
                 )
             }
@@ -173,12 +185,17 @@ fun EditShotScreen(
                             val yards = cleaned.toDoubleOrNull()
                             if (yards != null) {
                                 val metres = UnitConverter.displayToMetres(yards, true)
-                                onUpdateForm { copy(targetDistance = "%.1f".format(metres)) }
+                                if (metres <= MAX_DISTANCE_METRES) {
+                                    onUpdateForm { copy(targetDistance = "%.1f".format(metres)) }
+                                }
                             } else {
                                 onUpdateForm { copy(targetDistance = cleaned) }
                             }
                         } else {
-                            onUpdateForm { copy(targetDistance = cleaned) }
+                            val m = cleaned.toDoubleOrNull()
+                            if (m == null || m <= MAX_DISTANCE_METRES) {
+                                onUpdateForm { copy(targetDistance = cleaned) }
+                            }
                         }
                     },
                     label = { Text("Target Distance ($distUnit)") },

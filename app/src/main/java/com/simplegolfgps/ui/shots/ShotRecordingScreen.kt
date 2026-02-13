@@ -26,6 +26,11 @@ import com.simplegolfgps.ui.components.ChipSelector
 import com.simplegolfgps.ui.components.WindDirectionGrid
 import com.simplegolfgps.ui.components.clubAbbreviation
 
+/** Max shot distance in metres (~547 yards) */
+const val MAX_DISTANCE_METRES = 500.0
+/** Max elevation change per shot in metres (~55 yards) */
+const val MAX_ELEVATION_METRES = 50.0
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShotRecordingScreen(
@@ -312,12 +317,17 @@ fun ShotRecordingScreen(
                                     val yards = cleaned.toDoubleOrNull()
                                     if (yards != null) {
                                         val metres = UnitConverter.displayToMetres(yards, true)
-                                        onUpdateForm { copy(carryDistance = "%.1f".format(metres)) }
+                                        if (metres <= MAX_DISTANCE_METRES) {
+                                            onUpdateForm { copy(carryDistance = "%.1f".format(metres)) }
+                                        }
                                     } else {
                                         onUpdateForm { copy(carryDistance = cleaned) }
                                     }
                                 } else {
-                                    onUpdateForm { copy(carryDistance = cleaned) }
+                                    val m = cleaned.toDoubleOrNull()
+                                    if (m == null || m <= MAX_DISTANCE_METRES) {
+                                        onUpdateForm { copy(carryDistance = cleaned) }
+                                    }
                                 }
                             },
                             label = { Text("Carry ($distUnit)") },
@@ -336,12 +346,17 @@ fun ShotRecordingScreen(
                                 val yards = cleaned.toDoubleOrNull()
                                 if (yards != null) {
                                     val metres = UnitConverter.displayToMetres(yards, true)
-                                    onUpdateForm { copy(distance = "%.1f".format(metres)) }
+                                    if (metres <= MAX_DISTANCE_METRES) {
+                                        onUpdateForm { copy(distance = "%.1f".format(metres)) }
+                                    }
                                 } else {
                                     onUpdateForm { copy(distance = cleaned) }
                                 }
                             } else {
-                                onUpdateForm { copy(distance = cleaned) }
+                                val m = cleaned.toDoubleOrNull()
+                                if (m == null || m <= MAX_DISTANCE_METRES) {
+                                    onUpdateForm { copy(distance = cleaned) }
+                                }
                             }
                         },
                         label = { Text(if (showCarry) "Total ($distUnit)" else "Distance ($distUnit)") },
@@ -355,7 +370,9 @@ fun ShotRecordingScreen(
                         elevationMetres = formState.elevationChange,
                         useImperial = settings.useImperial,
                         onAdjust = { delta ->
-                            onUpdateForm { copy(elevationChange = elevationChange + delta) }
+                            onUpdateForm {
+                                copy(elevationChange = (elevationChange + delta).coerceIn(-MAX_ELEVATION_METRES, MAX_ELEVATION_METRES))
+                            }
                         },
                     )
                 }
@@ -377,12 +394,17 @@ fun ShotRecordingScreen(
                                 val yards = cleaned.toDoubleOrNull()
                                 if (yards != null) {
                                     val metres = UnitConverter.displayToMetres(yards, true)
-                                    onUpdateForm { copy(targetDistance = "%.1f".format(metres)) }
+                                    if (metres <= MAX_DISTANCE_METRES) {
+                                        onUpdateForm { copy(targetDistance = "%.1f".format(metres)) }
+                                    }
                                 } else {
                                     onUpdateForm { copy(targetDistance = cleaned) }
                                 }
                             } else {
-                                onUpdateForm { copy(targetDistance = cleaned) }
+                                val m = cleaned.toDoubleOrNull()
+                                if (m == null || m <= MAX_DISTANCE_METRES) {
+                                    onUpdateForm { copy(targetDistance = cleaned) }
+                                }
                             }
                         },
                         label = { Text("Target Distance ($distUnit)") },
