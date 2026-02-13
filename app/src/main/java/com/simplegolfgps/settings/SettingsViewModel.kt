@@ -24,8 +24,8 @@ data class SettingsState(
     val showDistanceToTarget: Boolean = true,
     val showMentalState: Boolean = false,
     val showCarryDistance: Boolean = false,
-    val showFairwayHit: Boolean = true,
-    val showGreenInRegulation: Boolean = true,
+    val showFairwayHit: Boolean = false,
+    val showGreenInRegulation: Boolean = false,
     val showTargetDistance: Boolean = false,
 )
 

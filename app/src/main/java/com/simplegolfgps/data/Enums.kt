@@ -32,7 +32,7 @@ enum class Lie(val displayName: String) {
     Fairway("Fairway"),
     Fringe("Fringe"),
     Green("Green"),
-    LightRough("Light Rough"),
+    LightRough("Rough"),
     HeavyRough("H-Rough"),
     Bunker("Bunker")
 }
@@ -57,15 +57,15 @@ enum class Strike(val displayName: String) {
 }
 
 enum class ClubDirection(val displayName: String) {
-    Straight("Straight"),
     Pull("Pull"),
+    Straight("Straight"),
     Push("Push")
 }
 
 enum class BallDirection(val displayName: String) {
-    Straight("Straight"),
-    Fade("Fade"),
     Slice("Slice"),
+    Fade("Fade"),
+    Straight("Straight"),
     Draw("Draw"),
     Hook("Hook")
 }

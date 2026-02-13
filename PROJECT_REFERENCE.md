@@ -15,15 +15,15 @@ Android Kotlin app for tracking golf shot distances and detailed feedback. Jetpa
 | File | Lines | Purpose |
 |------|-------|---------|
 | **Data Layer** (`data/`) | | |
-| `Enums.kt` | 110 | 12 enum classes for golf feedback (weather, wind, lie, strike, etc.) |
+| `Enums.kt` | 118 | 14 enum classes for golf feedback (weather, wind, lie, strike, fairwayHit, GIR, etc.) |
 | `Round.kt` | 15 | Room entity: id, courseName, weatherType, temperature(°C), windCondition, startingHole, dateCreated |
-| `Shot.kt` | 44 | Room entity: 13 nullable enum feedback fields + distance(m), elevation(m), clubUsed, holeNumber, shotNumber, ignoreForAnalytics, customNote |
+| `Shot.kt` | 50 | Room entity: 15 nullable enum/data fields + distance(m), elevation(m), clubUsed, holeNumber, shotNumber, powerPct, ignoreForAnalytics, customNote |
 | `RoundDao.kt` | 25 | CRUD + getAll() Flow, getById/getByIdFlow |
 | `ShotDao.kt` | 37 | CRUD + getShotsByRoundId, getShotsForAnalytics (excludes ignored), getShotCountByHole, getByRoundHoleShot |
-| `Converters.kt` | 44 | Room TypeConverters: 13 enum↔String pairs |
-| `AppDatabase.kt` | 41 | Room DB v4, singleton, MIGRATION_3_4 (adds shotNumber column) |
+| `Converters.kt` | 50 | Room TypeConverters: 15 enum↔String pairs |
+| `AppDatabase.kt` | 62 | Room DB v8, singleton, MIGRATION_3_4 through MIGRATION_7_8 |
 | **Settings** (`settings/`) | | |
-| `SettingsDataStore.kt` | 86 | DataStore prefs: useImperial, enabledClubs, clubOrder, 11 feedback toggles |
+| `SettingsDataStore.kt` | 96 | DataStore prefs: useImperial, enabledClubs, clubOrder, 14 feedback toggles |
 | `SettingsViewModel.kt` | 108 | Exposes SettingsState StateFlow, toggle/reorder methods |
 | `UnitConverter.kt` | 33 | Static: metres↔yards, °C↔°F, unit labels. Internal storage always metres/°C |
 | `SettingsScreen.kt` | 199 | Units toggle, feedback toggles, club config with reorder |
@@ -59,7 +59,7 @@ Android Kotlin app for tracking golf shot distances and detailed feedback. Jetpa
 | startingHole | Int | default 1 |
 | dateCreated | Long | epoch millis |
 
-### Shot (v4)
+### Shot (v8)
 | Column | Type | Notes |
 |--------|------|-------|
 | id | Long PK | autoGenerate |
@@ -68,6 +68,8 @@ Android Kotlin app for tracking golf shot distances and detailed feedback. Jetpa
 | shotNumber | Int | default 1, multiple shots per hole |
 | clubUsed | String? | |
 | distance | Double? | metres |
+| carryDistance | Double? | metres (v5) |
+| carryElevationChange | Double? | metres (v6) |
 | elevationChange | Double? | metres |
 | windDirection | WindDirection? | enum |
 | windStrength | WindStrength? | enum |
@@ -84,6 +86,10 @@ Android Kotlin app for tracking golf shot distances and detailed feedback. Jetpa
 | distanceToTarget | DistanceToTarget? | enum |
 | customNote | String? | |
 | ignoreForAnalytics | Boolean | default false |
+| fairwayHit | FairwayHit? | enum (v7) |
+| greenInRegulation | GreenInRegulation? | enum (v7) |
+| targetDistance | Double? | metres (v7) |
+| powerPct | Int? | null = 100% (v8) |
 | timestamp | Long | epoch millis |
 
 ---
@@ -95,11 +101,13 @@ Android Kotlin app for tracking golf shot distances and detailed feedback. Jetpa
 | WeatherType | Sunny, Cloudy, Overcast, LightRain, HeavyRain |
 | WindDirection | N, NE, E, SE, S, SW, W, NW (each has arrow symbol) |
 | WindStrength | VeryStrong, Strong, Moderate, Calm, None |
-| Lie | Tee, Fairway, Fringe, Green, LightRough, HeavyRough, Bunker |
+| Lie | Tee, Fairway, Fringe, Green, LightRough("Rough"), HeavyRough, Bunker |
 | ShotType | Full, Pitch, Punch, Flop, BumpAndRun, Chip, BunkerChip, Putt |
 | Strike | Pure, Fat, Thin, Shank, Toe |
-| ClubDirection | Straight, Pull, Push |
-| BallDirection | Straight, Fade, Slice, Draw, Hook |
+| ClubDirection | Pull, Straight, Push |
+| BallDirection | Slice, Fade, Straight, Draw, Hook |
+| FairwayHit | Yes, No |
+| GreenInRegulation | Yes, No |
 | LieDirection | Flat, Uphill, Downhill, AboveFeet, BelowFeet |
 | MentalState | Calm, Rushed, Frustrating, Overthinking |
 | BallFlight | Sky, High, Medium, Low, WormBurner |
@@ -126,6 +134,10 @@ Android Kotlin app for tracking golf shot distances and detailed feedback. Jetpa
 | SHOW_LIE_DIRECTION | Boolean | false | Uphill/downhill lie |
 | SHOW_SHOT_TYPE | Boolean | true | Full/pitch/chip/putt etc |
 | SHOW_MENTAL_STATE | Boolean | false | Mental state + note |
+| SHOW_CARRY_DISTANCE | Boolean | false | Separate carry distance field |
+| SHOW_FAIRWAY_HIT | Boolean | false | Fairway hit Yes/No |
+| SHOW_GREEN_IN_REGULATION | Boolean | false | Green in regulation Yes/No |
+| SHOW_TARGET_DISTANCE | Boolean | false | Target distance field |
 
 **Default clubs:** Driver, 3-Wood, 5-Wood, 3-Hybrid, 4-Hybrid, 3-Iron through 9-Iron, PW, GW, SW, LW, Putter
 
@@ -202,7 +214,8 @@ _filterState ───────────────────┘
 ## Key Behaviors
 
 1. **Putter auto-sets:** Selecting Putter club auto-sets Lie=Green, ShotType=Putt
-2. **Shot advancement:** After saving, auto-increments to next shotNumber for same hole
+2. **Defaults on new shot:** ShotType=Full, PowerPct=100
+3. **Shot advancement:** After saving, auto-increments to next shotNumber for same hole
 3. **Hole/shot switching:** Changing hole resets shotNumber to count+1; changing shotNumber loads existing shot if one exists
 4. **Delete cascade:** Deleting a round deletes all its shots
 5. **Ignore for analytics:** Per-shot flag, filtered at DAO level (`getShotsForAnalytics`)

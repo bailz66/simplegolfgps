@@ -42,6 +42,7 @@ data class Shot(
     val customNote: String? = null,
     val shotNumber: Int = 1,
     val ignoreForAnalytics: Boolean = false,
+    val powerPct: Int? = null,
     val fairwayHit: FairwayHit? = null,
     val greenInRegulation: GreenInRegulation? = null,
     val targetDistance: Double? = null,

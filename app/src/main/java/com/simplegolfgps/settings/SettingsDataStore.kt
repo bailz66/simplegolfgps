@@ -64,8 +64,8 @@ class SettingsDataStore(private val context: Context) {
     val showBallFlight: Flow<Boolean> = context.dataStore.data.map { it[SHOW_BALL_FLIGHT] ?: false }
     val showMentalState: Flow<Boolean> = context.dataStore.data.map { it[SHOW_MENTAL_STATE] ?: false }
     val showCarryDistance: Flow<Boolean> = context.dataStore.data.map { it[SHOW_CARRY_DISTANCE] ?: false }
-    val showFairwayHit: Flow<Boolean> = context.dataStore.data.map { it[SHOW_FAIRWAY_HIT] ?: true }
-    val showGreenInRegulation: Flow<Boolean> = context.dataStore.data.map { it[SHOW_GREEN_IN_REGULATION] ?: true }
+    val showFairwayHit: Flow<Boolean> = context.dataStore.data.map { it[SHOW_FAIRWAY_HIT] ?: false }
+    val showGreenInRegulation: Flow<Boolean> = context.dataStore.data.map { it[SHOW_GREEN_IN_REGULATION] ?: false }
     val showTargetDistance: Flow<Boolean> = context.dataStore.data.map { it[SHOW_TARGET_DISTANCE] ?: false }
 
     suspend fun setUseImperial(value: Boolean) {

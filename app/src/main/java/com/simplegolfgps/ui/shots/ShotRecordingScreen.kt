@@ -441,6 +441,12 @@ fun ShotRecordingScreen(
                     )
                 }
 
+                // Power %
+                PowerPctSelector(
+                    value = formState.powerPct,
+                    onValueChange = { onUpdateForm { copy(powerPct = it) } },
+                )
+
                 // Fairway Hit and GIR
                 if (settings.showFairwayHit) {
                     ChipSelector(
@@ -750,6 +756,7 @@ private fun ShotConfirmationDialog(
                     formState.windStrength?.let { add("Wind Strength" to it.displayName) }
                     formState.lie?.let { add("Lie" to it.displayName) }
                     formState.shotType?.let { add("Shot Type" to it.displayName) }
+                    if (formState.powerPct != 100) add("Power" to "${formState.powerPct}%")
                     formState.lieDirection?.let { add("Lie Direction" to it.displayName) }
                     formState.strike?.let { add("Strike" to it.displayName) }
                     formState.ballFlight?.let { add("Ball Flight" to it.displayName) }
@@ -957,6 +964,37 @@ fun ElevationControl(
                     Icons.Default.KeyboardArrowDown,
                     contentDescription = "Downhill",
                     modifier = Modifier.size(20.dp),
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun PowerPctSelector(
+    value: Int,
+    onValueChange: (Int) -> Unit,
+) {
+    val options = listOf(50, 60, 70, 75, 80, 85, 90, 95, 100)
+    Column {
+        Text(
+            "Power %",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            options.forEach { pct ->
+                val selected = value == pct
+                FilterChip(
+                    selected = selected,
+                    onClick = { onValueChange(pct) },
+                    label = { Text("$pct%") },
                 )
             }
         }

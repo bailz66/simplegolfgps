@@ -228,6 +228,12 @@ fun EditShotScreen(
                 )
             }
 
+            // Power %
+            PowerPctSelector(
+                value = formState.powerPct,
+                onValueChange = { onUpdateForm { copy(powerPct = it) } },
+            )
+
             // Fairway Hit and GIR
             if (settings.showFairwayHit) {
                 ChipSelector(
