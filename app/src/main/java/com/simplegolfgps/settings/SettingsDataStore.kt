@@ -30,6 +30,7 @@ class SettingsDataStore(private val context: Context) {
         val SHOW_FAIRWAY_HIT = booleanPreferencesKey("show_fairway_hit")
         val SHOW_GREEN_IN_REGULATION = booleanPreferencesKey("show_green_in_regulation")
         val SHOW_TARGET_DISTANCE = booleanPreferencesKey("show_target_distance")
+        val SHOW_POWER_PCT = booleanPreferencesKey("show_power_pct")
 
         val DEFAULT_CLUBS = listOf(
             "Driver", "3-Wood", "5-Wood", "3-Hybrid", "4-Hybrid",
@@ -67,6 +68,7 @@ class SettingsDataStore(private val context: Context) {
     val showFairwayHit: Flow<Boolean> = context.dataStore.data.map { it[SHOW_FAIRWAY_HIT] ?: false }
     val showGreenInRegulation: Flow<Boolean> = context.dataStore.data.map { it[SHOW_GREEN_IN_REGULATION] ?: false }
     val showTargetDistance: Flow<Boolean> = context.dataStore.data.map { it[SHOW_TARGET_DISTANCE] ?: false }
+    val showPowerPct: Flow<Boolean> = context.dataStore.data.map { it[SHOW_POWER_PCT] ?: false }
 
     suspend fun setUseImperial(value: Boolean) {
         context.dataStore.edit { it[USE_IMPERIAL] = value }
@@ -95,4 +97,5 @@ class SettingsDataStore(private val context: Context) {
     suspend fun setShowFairwayHit(value: Boolean) { context.dataStore.edit { it[SHOW_FAIRWAY_HIT] = value } }
     suspend fun setShowGreenInRegulation(value: Boolean) { context.dataStore.edit { it[SHOW_GREEN_IN_REGULATION] = value } }
     suspend fun setShowTargetDistance(value: Boolean) { context.dataStore.edit { it[SHOW_TARGET_DISTANCE] = value } }
+    suspend fun setShowPowerPct(value: Boolean) { context.dataStore.edit { it[SHOW_POWER_PCT] = value } }
 }

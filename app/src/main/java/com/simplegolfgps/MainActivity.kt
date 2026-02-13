@@ -192,6 +192,7 @@ fun AppNavigation() {
                 onSetShowFairwayHit = { settingsViewModel.setShowFairwayHit(it) },
                 onSetShowGreenInRegulation = { settingsViewModel.setShowGreenInRegulation(it) },
                 onSetShowTargetDistance = { settingsViewModel.setShowTargetDistance(it) },
+                onSetShowPowerPct = { settingsViewModel.setShowPowerPct(it) },
                 onBack = { navController.popBackStack() },
             )
         }

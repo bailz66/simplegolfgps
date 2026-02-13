@@ -34,6 +34,7 @@ fun SettingsScreen(
     onSetShowFairwayHit: (Boolean) -> Unit,
     onSetShowGreenInRegulation: (Boolean) -> Unit,
     onSetShowTargetDistance: (Boolean) -> Unit,
+    onSetShowPowerPct: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
     Scaffold(
@@ -141,7 +142,9 @@ fun SettingsScreen(
                 FeedbackToggle("Green in Regulation", state.showGreenInRegulation, onSetShowGreenInRegulation)
             }
 
-            // Measurement section additions
+            item {
+                FeedbackToggle("Power %", state.showPowerPct, onSetShowPowerPct)
+            }
             item {
                 FeedbackToggle("Target Distance", state.showTargetDistance, onSetShowTargetDistance)
             }

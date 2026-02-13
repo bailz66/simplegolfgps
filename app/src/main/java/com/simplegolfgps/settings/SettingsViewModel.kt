@@ -27,6 +27,7 @@ data class SettingsState(
     val showFairwayHit: Boolean = false,
     val showGreenInRegulation: Boolean = false,
     val showTargetDistance: Boolean = false,
+    val showPowerPct: Boolean = false,
 )
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
@@ -87,12 +88,14 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             dataStore.showFairwayHit,
             dataStore.showGreenInRegulation,
             dataStore.showTargetDistance,
-        ) { fairway, gir, target -> listOf(fairway, gir, target) }
+            dataStore.showPowerPct,
+        ) { fairway, gir, target, power -> listOf(fairway, gir, target, power) }
     ) { partial, extras ->
         partial.copy(
             showFairwayHit = extras[0],
             showGreenInRegulation = extras[1],
             showTargetDistance = extras[2],
+            showPowerPct = extras[3],
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SettingsState())
 
@@ -114,6 +117,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun setShowFairwayHit(value: Boolean) = viewModelScope.launch { dataStore.setShowFairwayHit(value) }
     fun setShowGreenInRegulation(value: Boolean) = viewModelScope.launch { dataStore.setShowGreenInRegulation(value) }
     fun setShowTargetDistance(value: Boolean) = viewModelScope.launch { dataStore.setShowTargetDistance(value) }
+    fun setShowPowerPct(value: Boolean) = viewModelScope.launch { dataStore.setShowPowerPct(value) }
 
     fun toggleClub(club: String) {
         val current = state.value.enabledClubs.toMutableList()
