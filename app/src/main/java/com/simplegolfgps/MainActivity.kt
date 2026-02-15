@@ -87,20 +87,22 @@ fun AppNavigation() {
             Screen.EditRound.route,
             arguments = listOf(navArgument("roundId") { type = NavType.LongType }),
         ) { backStackEntry ->
-            val roundId = backStackEntry.arguments?.getLong("roundId") ?: return@composable
-            var round by remember { mutableStateOf<com.simplegolfgps.data.Round?>(null) }
-            LaunchedEffect(roundId) {
-                round = roundsViewModel.getRoundById(roundId)
+            val roundId = backStackEntry.arguments?.getLong("roundId")
+            if (roundId != null) {
+                var round by remember { mutableStateOf<com.simplegolfgps.data.Round?>(null) }
+                LaunchedEffect(roundId) {
+                    round = roundsViewModel.getRoundById(roundId)
+                }
+                EditRoundScreen(
+                    round = round,
+                    settings = settingsState,
+                    onSave = { updated ->
+                        roundsViewModel.updateRound(updated)
+                        navController.popBackStack()
+                    },
+                    onBack = { navController.popBackStack() },
+                )
             }
-            EditRoundScreen(
-                round = round,
-                settings = settingsState,
-                onSave = { updated ->
-                    roundsViewModel.updateRound(updated)
-                    navController.popBackStack()
-                },
-                onBack = { navController.popBackStack() },
-            )
         }
 
         // Shot Recording
@@ -108,40 +110,42 @@ fun AppNavigation() {
             Screen.ShotRecording.route,
             arguments = listOf(navArgument("roundId") { type = NavType.LongType }),
         ) { backStackEntry ->
-            val roundId = backStackEntry.arguments?.getLong("roundId") ?: return@composable
-            val shotViewModel: ShotViewModel = viewModel()
+            val roundId = backStackEntry.arguments?.getLong("roundId")
+            if (roundId != null) {
+                val shotViewModel: ShotViewModel = viewModel()
 
-            LaunchedEffect(roundId) {
-                shotViewModel.loadRound(roundId)
+                LaunchedEffect(roundId) {
+                    shotViewModel.loadRound(roundId)
+                }
+
+                val round by shotViewModel.round.collectAsState()
+                val formState by shotViewModel.formState.collectAsState()
+                val measurementState by shotViewModel.measurementState.collectAsState()
+                val shots by shotViewModel.shots.collectAsState()
+
+                ShotRecordingScreen(
+                    round = round,
+                    formState = formState,
+                    measurementState = measurementState,
+                    shots = shots,
+                    settings = settingsState,
+                    onUpdateForm = { shotViewModel.updateForm(it) },
+                    onStartMeasurement = { shotViewModel.startMeasurement() },
+                    onFinishMeasurement = { shotViewModel.finishMeasurement() },
+                    onLockCarryDistance = { shotViewModel.lockCarryDistance() },
+                    onCancelMeasurement = { shotViewModel.cancelMeasurement() },
+                    onSaveShot = { shotViewModel.saveShot {} },
+                    onShotClick = { shotId ->
+                        navController.navigate(Screen.EditShot.createRoute(shotId))
+                    },
+                    onDeleteShot = { shotViewModel.deleteShot(it) },
+                    onEditRound = { navController.navigate(Screen.EditRound.createRoute(roundId)) },
+                    onHoleChanged = { shotViewModel.onHoleChanged(it) },
+                    onShotNumberChanged = { shotViewModel.onShotNumberChanged(it) },
+                    onBack = { navController.popBackStack() },
+                    hasLocationPermission = shotViewModel.hasLocationPermission(),
+                )
             }
-
-            val round by shotViewModel.round.collectAsState()
-            val formState by shotViewModel.formState.collectAsState()
-            val measurementState by shotViewModel.measurementState.collectAsState()
-            val shots by shotViewModel.shots.collectAsState()
-
-            ShotRecordingScreen(
-                round = round,
-                formState = formState,
-                measurementState = measurementState,
-                shots = shots,
-                settings = settingsState,
-                onUpdateForm = { shotViewModel.updateForm(it) },
-                onStartMeasurement = { shotViewModel.startMeasurement() },
-                onFinishMeasurement = { shotViewModel.finishMeasurement() },
-                onLockCarryDistance = { shotViewModel.lockCarryDistance() },
-                onCancelMeasurement = { shotViewModel.cancelMeasurement() },
-                onSaveShot = { shotViewModel.saveShot {} },
-                onShotClick = { shotId ->
-                    navController.navigate(Screen.EditShot.createRoute(shotId))
-                },
-                onDeleteShot = { shotViewModel.deleteShot(it) },
-                onEditRound = { navController.navigate(Screen.EditRound.createRoute(roundId)) },
-                onHoleChanged = { shotViewModel.onHoleChanged(it) },
-                onShotNumberChanged = { shotViewModel.onShotNumberChanged(it) },
-                onBack = { navController.popBackStack() },
-                hasLocationPermission = shotViewModel.hasLocationPermission(),
-            )
         }
 
         // Edit Shot
@@ -149,26 +153,28 @@ fun AppNavigation() {
             Screen.EditShot.route,
             arguments = listOf(navArgument("shotId") { type = NavType.LongType }),
         ) { backStackEntry ->
-            val shotId = backStackEntry.arguments?.getLong("shotId") ?: return@composable
-            val shotViewModel: ShotViewModel = viewModel()
+            val shotId = backStackEntry.arguments?.getLong("shotId")
+            if (shotId != null) {
+                val shotViewModel: ShotViewModel = viewModel()
 
-            LaunchedEffect(shotId) {
-                shotViewModel.loadShotForEditing(shotId)
+                LaunchedEffect(shotId) {
+                    shotViewModel.loadShotForEditing(shotId)
+                }
+
+                val formState by shotViewModel.formState.collectAsState()
+
+                EditShotScreen(
+                    formState = formState,
+                    settings = settingsState,
+                    onUpdateForm = { shotViewModel.updateForm(it) },
+                    onSave = {
+                        shotViewModel.updateShot(shotId) {
+                            navController.popBackStack()
+                        }
+                    },
+                    onBack = { navController.popBackStack() },
+                )
             }
-
-            val formState by shotViewModel.formState.collectAsState()
-
-            EditShotScreen(
-                formState = formState,
-                settings = settingsState,
-                onUpdateForm = { shotViewModel.updateForm(it) },
-                onSave = {
-                    shotViewModel.updateShot(shotId) {
-                        navController.popBackStack()
-                    }
-                },
-                onBack = { navController.popBackStack() },
-            )
         }
 
         // Settings

@@ -4,11 +4,13 @@ import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -74,7 +76,7 @@ fun ShotRecordingScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -415,7 +417,7 @@ fun ShotRecordingScreen(
                 }
             }
 
-            Divider()
+            HorizontalDivider()
 
             // Club selector
             Column(
@@ -640,7 +642,7 @@ fun ShotRecordingScreen(
 
             }
 
-            Divider()
+            HorizontalDivider()
 
             // Shot history for this round
             if (shots.isNotEmpty()) {
@@ -845,7 +847,7 @@ private fun ShotDetailRow(label: String, value: String) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 private fun ShotListItem(
     shot: Shot,
@@ -876,7 +878,7 @@ private fun ShotListItem(
                 shot.ballDirection?.let { Text(it.displayName) }
             }
         },
-        modifier = Modifier.clickable(onClick = onClick),
+        modifier = Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick),
         trailingContent = {
             if (shot.ignoreForAnalytics) {
                 Icon(

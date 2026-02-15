@@ -10,6 +10,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.*
 import com.simplegolfgps.data.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -56,6 +57,7 @@ data class ShotFormState(
     val targetDistance: String = "",
 )
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ShotViewModel(application: Application) : AndroidViewModel(application) {
     private val db = AppDatabase.getDatabase(application)
     private val shotDao = db.shotDao()
@@ -174,7 +176,7 @@ class ShotViewModel(application: Application) : AndroidViewModel(application) {
                 if (!current.startLocked) {
                     // Still positioning — keep the best accuracy location
                     val isBetter = current.startLocation == null ||
-                            location.accuracy < (current.startLocation?.accuracy ?: Float.MAX_VALUE)
+                            location.accuracy < (current.startLocation.accuracy)
                     _measurementState.update {
                         it.copy(
                             startLocation = if (isBetter) location else it.startLocation,
